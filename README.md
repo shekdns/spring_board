@@ -18,4 +18,5 @@
 * 테스트 코드 및 커넥션 풀 설정
 * 게시판 DB 테이블 구성 및 기본 개발 환경 셋팅 완료
 
-#DB
+# DB
+![spring_board](https://user-images.githubusercontent.com/15880534/113380611-a6b35180-93b7-11eb-86bd-32366d1d99c2.JPG)
