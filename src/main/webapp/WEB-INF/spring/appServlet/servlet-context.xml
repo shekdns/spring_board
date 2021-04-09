@@ -28,7 +28,7 @@
 	<context:component-scan base-package="org.zerock.controller" />
 	<!-- <context:component-scan base-package="org.zerock.exception" /> -->
 	
-	<!-- file upload를 위한 설정 -->
+	<!-- file uploadのための設定 -->
 	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
 	</beans:bean>
 	
