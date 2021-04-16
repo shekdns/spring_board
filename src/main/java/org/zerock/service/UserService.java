@@ -3,7 +3,7 @@ package org.zerock.service;
 import org.zerock.domain.MemberVO;
 
 /*
- * メンバー関連のSerivce interface
+ * 掲示板関連のSerivce interface
  */
 public interface UserService {
 	

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.zerock.domain.MemberVO;
+import org.zerock.service.MailSendService;
 import org.zerock.service.UserService;
 
 import com.google.gson.Gson;
@@ -28,6 +29,9 @@ public class UserController {
 	@Autowired
 	private UserService service;
 	
+	@Autowired
+	private MailSendService mail_service;
+	
 	/*
 	 * 会員登録ページメソッド
 	 */
@@ -40,13 +44,17 @@ public class UserController {
 	/*
 	 * 1. 会員登録メソッド
 	 * 入力した情報をオブジェクトで受け取り登録メソッドを実行する
+	 * 4/12 機能追加
+	  * 会員登録が完了したら、mail_serviceを通じてメールを送信
 	 * @return ログインページに移動
 	 */
 	@PostMapping("/sign_in")
-	public String sign_in(MemberVO user) {
+	public String sign_in(MemberVO user, HttpServletRequest request) {
 
 		log.info("user_register: " + user);
+		
 		service.user_register(user);
+		mail_service.mailSendWithRegister(user.getEmail(), user.getUserid(), request);
 		
 		return "redirect:/board/sign_up";
 	}
