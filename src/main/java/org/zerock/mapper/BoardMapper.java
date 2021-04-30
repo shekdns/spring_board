@@ -53,4 +53,7 @@ public interface BoardMapper {
 	public int getTotalCount(Criteria cri);
 	
 	
+	// 2つ以上のパラメータを越えるために@Paramを使用。コメント追加·削除時にamountの1/-1値
+	public void updateReplyCnt(@Param("bno") int bno, @Param("amount") int amount);
+	
 }

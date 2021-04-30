@@ -11,9 +11,8 @@
 				<div class="card-header">Register</div>
 				<div class="card-body">
 					<div class="sbp-preview">
-						<div class="sbp-preview-content">
-						<!--まだファイルアップロード機能が追加されていませんが、基本的にファイル1、2、3に非表示値を越えて文章登録を可能に設定  -->	
-						  <form role="form" action="/board/register" method="post" enctype="multipart/form-data">
+						<div class="sbp-preview-content">	
+						  <form role="form" action="/board/register" method="post" enctype="multipart/form-data" name="register">
 					           <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 				
 								 <input type="hidden" name="file_1" value="">
@@ -47,11 +46,11 @@
 						        </div>
 					          
 					          
-					          <button type="submit" class="btn btn-default">Submit
-					            Button</button>
-					          <button type="reset" class="btn btn-default">Reset Button</button>
-					        </form>
-												
+					          <input type="button" value="Submit" class="btn btn-primary" onclick="check_onclick()">
+					          <button type="reset" class="btn btn-danger">Reset Button</button>
+					      
+					        </form>	
+					       											
 						</div>
 					</div>
 				</div>
@@ -59,8 +58,24 @@
 		</div>
 
 
+<script>
+	//form NULL値 チェック
+	function check_onclick(){
+		var check_form = document.register;
+
+		if(check_form.title.value == ""){
+			alert("제목을 입력해 주세요.");
+			return register.title.focus();
+		}else if(check_form.content.value == ""){
+			alert("컨텐츠를 입력해 주세요.");
+			return register.content.focus();	
+		}else{
+			check_form.submit();
+		}
+
+	}
 
 
-
+</script>
 
 <%@include file="../include/footer.jsp"%> 

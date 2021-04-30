@@ -32,5 +32,8 @@
 	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
 	</beans:bean>
 	
+	<!-- Spring securityのための設定-->
+	<security:global-method-security pre-post-annotations="enabled" secured-annotations="enabled" />
+	
 	
 </beans:beans>

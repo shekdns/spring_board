@@ -1,6 +1,7 @@
 package org.zerock.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,11 +10,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.zerock.domain.BoardVO;
 import org.zerock.domain.Criteria;
 import org.zerock.domain.PageDTO;
 import org.zerock.service.BoardService;
+import org.zerock.util.UploadUtils;
 
 import lombok.extern.log4j.Log4j;
 
@@ -25,6 +28,9 @@ import lombok.extern.log4j.Log4j;
 @RequestMapping("/board/*")
 public class BoardController {
 	
+	
+	@Value("${globalConfig.uploadPath}")
+	private String uploadPath;
 	
 	@Autowired
 	private BoardService service;
@@ -68,10 +74,32 @@ public class BoardController {
 	 * formタグでBoardVO情報を受けて文を登録する。
 	  *  文登録が完了したら、addFlashAttributeで登録された文番号と結果をJSPに転送する。 転送以降のモデルデータは消滅する。
 	  * その後returnを通じてリストページに戻ることになる。
+	  * Multipart Fileオブジェクトでアップロードファイル設定
+	  * for文を繰り返しながらview側にアップロードされたファイル数だけsetFile数を指定
 	 */
 	@PostMapping("/register")
 	@PreAuthorize("isAuthenticated()")
-	public String register(BoardVO board, RedirectAttributes rttr) {
+	public String register(MultipartFile[] uploadFile ,BoardVO board, RedirectAttributes rttr) {
+		
+		int index = 0;
+		for(MultipartFile multipartFile : uploadFile) {
+			if(multipartFile.getSize() > 0) {
+				switch (index) {
+				case 0:
+					board.setFile_1(UploadUtils.uploadFormPost(multipartFile, uploadPath));
+					break;
+				case 1:
+					board.setFile_2(UploadUtils.uploadFormPost(multipartFile, uploadPath));
+					break;	
+				default:
+					board.setFile_3(UploadUtils.uploadFormPost(multipartFile, uploadPath));
+					break;
+				}
+			}
+			index++;
+			
+			
+		}
 		
 		log.info("register : board");
 		
@@ -102,12 +130,36 @@ public class BoardController {
 	 * form タグでBoardVO 情報を受け取って再登録·修正
          *  正常に修正された場合、addFlashAttributeで結果を転送
 	 * returnを通じてリストページに戻る。Criteriaオブジェクトを通じて元のページ番号に戻る。
+	 * Multipart Fileオブジェクトでアップロードファイル設定
+	 * for文を繰り返しながらview側にアップロードされたファイル数だけsetFile数を指定
 	 */
 	@PreAuthorize("principal.username == #board.writer")
 	@PostMapping("/modify")
-	public String modify(BoardVO board, @ModelAttribute("cri") Criteria cri, RedirectAttributes rttr) {
+	public String modify(MultipartFile[] uploadFile ,BoardVO board, @ModelAttribute("cri") Criteria cri, RedirectAttributes rttr) {
 		
 		log.info("modify : " + board );
+		
+		int index = 0;
+		for(MultipartFile multipartFile : uploadFile) {
+			
+			if(multipartFile.getSize() > 0) {
+				switch (index) {
+				case 0:
+					board.setFile_1(UploadUtils.uploadFormPost(multipartFile, uploadPath));
+					break;
+				case 1:
+					board.setFile_2(UploadUtils.uploadFormPost(multipartFile, uploadPath));
+					break;	
+				default:
+					board.setFile_3(UploadUtils.uploadFormPost(multipartFile, uploadPath));
+					break;
+				}
+				
+			}
+			
+			index++;
+		}
+		
 		
 		if (service.modify(board)) {
 	         rttr.addFlashAttribute("result", "success");
