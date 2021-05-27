@@ -33,38 +33,38 @@ public class BoardMapperTests {
 
 	}
 
-	@Test
-	public void testInsert() {
-
-		for(int i = 0; i < 100; i++) {
-			BoardVO board = new BoardVO();
-			board.setTitle("20210430" + i);
-			board.setContent("새로 작성하는 내용" + i);
-			board.setWriter("tester" + i);
-			board.setFile_1("df");
-			board.setFile_2("df");
-			board.setFile_3("df");
-			mapper.insert(board);
-	
-			log.info(board);
-		}
-	}
-
-	@Test
-	public void testInsertSelectKey() {
-
-		BoardVO board = new BoardVO();
-		board.setTitle("새로 작성하는 글 select key");
-		board.setContent("새로 작성하는 내용 select key");
-		board.setWriter("newbie");
-		board.setFile_1("df");
-		board.setFile_2("df");
-		board.setFile_3("df");
-		
-		mapper.insertSelectKey(board);
-
-		log.info(board);
-	}
+//	@Test
+//	public void testInsert() {
+//
+//		for(int i = 0; i < 100; i++) {
+//			BoardVO board = new BoardVO();
+//			board.setTitle("20210430" + i);
+//			board.setContent("새로 작성하는 내용" + i);
+//			board.setWriter("tester" + i);
+//			board.setFile_1("df");
+//			board.setFile_2("df");
+//			board.setFile_3("df");
+//			mapper.insert(board);
+//	
+//			log.info(board);
+//		}
+//	}
+//
+//	@Test
+//	public void testInsertSelectKey() {
+//
+//		BoardVO board = new BoardVO();
+//		board.setTitle("새로 작성하는 글 select key");
+//		board.setContent("새로 작성하는 내용 select key");
+//		board.setWriter("newbie");
+//		board.setFile_1("df");
+//		board.setFile_2("df");
+//		board.setFile_3("df");
+//		
+//		mapper.insertSelectKey(board);
+//
+//		log.info(board);
+//	}
 
 	@Test
 	public void testRead() {
@@ -82,23 +82,23 @@ public class BoardMapperTests {
 		log.info("DELETE COUNT: " + mapper.delete(12));
 	}
 
-	@Test
-	public void testUpdate() {
-
-		BoardVO board = new BoardVO();
-		//存在する掲示物番号でテスト
-		board.setBno(23);
-		board.setTitle("수정된 제목");
-		board.setContent("수정된 내용");
-		board.setWriter("newbie");
-		board.setFile_1("df");
-		board.setFile_2("df");
-		board.setFile_3("df");
-
-		int count = mapper.update(board);
-		log.info("UPDATE COUNT: " + count);
-
-	}
+//	@Test
+//	public void testUpdate() {
+//
+//		BoardVO board = new BoardVO();
+//		//存在する掲示物番号でテスト
+//		board.setBno(23);
+//		board.setTitle("수정된 제목");
+//		board.setContent("수정된 내용");
+//		board.setWriter("newbie");
+//		board.setFile_1("df");
+//		board.setFile_2("df");
+//		board.setFile_3("df");
+//
+//		int count = mapper.update(board);
+//		log.info("UPDATE COUNT: " + count);
+//
+//	}
 
 	@Test
 	public void testPaging() {

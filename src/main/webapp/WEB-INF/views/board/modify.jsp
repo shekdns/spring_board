@@ -27,7 +27,7 @@
 								       	パラメータ収集ができるよう(値はnullになる)ためにhiddenに値を渡す。
 								     	
 								    -->
-					     			<c:forEach var="i" begin="1" end="3">
+					     		<%-- 	<c:forEach var="i" begin="1" end="3">
 										<c:set var="t" value="file_${i}" />
 										<c:choose>
 											<c:when test="${not empty board[t]}">
@@ -37,7 +37,7 @@
 												<input type="hidden" name="file_${i}" value="">		
 									        </c:otherwise>
 										</c:choose>
-									</c:forEach>
+									</c:forEach> --%>
 				     				   
 							        <input type='hidden' name='pageNum' value='<c:out value="${cri.pageNum }"/>'>
 							        <input type='hidden' name='amount' value='<c:out value="${cri.amount }"/>'>
@@ -64,7 +64,7 @@
 							    value='<c:out value="${board.writer}"/>' readonly="readonly">            
 							</div>
 							
-							<c:forEach var="i" begin="1" end="3">
+						<%-- 	<c:forEach var="i" begin="1" end="3">
 								<c:set var="t" value="file_${i}" />
 								<div class="form-group">
 								<label>이미지${i}</label>
@@ -76,7 +76,7 @@
 									</c:if>
 									<input type="file" class="form-control" name='uploadFile'>
 								</div>
-							</c:forEach>
+							</c:forEach> --%>
 													
 							    <sec:authentication property="principal" var="pinfo"/>
 								<sec:authorize access="isAuthenticated()">
@@ -93,13 +93,44 @@
 				</div>
 			</div>
 		</div>
+		
+		 <div class="row">
+        	 <div class="col-md-12">
+        		<div class="card card-success">
+	            	  <div class="card-header">
+	              		  <h3 class="card-title">파일 수정</h3>
+	             	 </div>
+	             	 <div class="card-body">        
+	             	 	
+	             	 	  <div class="form-group uploadDiv">
+		             	 	<label class="input-file-button" for="input-file">
+							  업로드
+							</label>
+							<input type="file"  id="input-file" name="uploadFile" multiple style="display:none"/>
+	             	 	  </div>
+	             	 
+	             	      	 	  
+	             	 	  <div class="uploadResult">
+	             	 	  	<ul>
+	             	 	  		
+	             	 	  	
+	             	 	  	</ul>
+	      
+	             	 	  </div>
+	             	 	
+	             	 </div>
+             	 </div>
+        	
+        	 </div>
+        </div>
+		
 
 <%@include file="../include/footer.jsp"%>
 <script type="text/javascript">
 $(document).ready(function() {
 
 
-	  var formObj = $("form");
+		 var formObj = $("form");
 
 	  $('button').on("click", function(e){
 	    
@@ -127,10 +158,29 @@ $(document).ready(function() {
 	      formObj.append(amountTag);
 	      formObj.append(keywordTag);
 	      formObj.append(typeTag);
-	    }
+	    }else if(operation === 'modify'){
 	    //修正
-	    formObj.submit();
+	    	console.log("sumbit clicked");
+
+				var str = "";
+
+				$(".uploadResult ul li").each(function(i, obj){
+
+					var jobj = $(obj);
+
+					console.dir(jobj);
+					str += "<input type='hidden' name='attachList["+i+"].uuid' value='"+jobj.data("uuid")+"'>";
+					str += "<input type='hidden' name='attachList["+i+"].uploadPath' value='"+jobj.data("path")+"'>";
+					str += "<input type='hidden' name='attachList["+i+"].fileName' value='"+jobj.data("filename")+"'>";
+					str += "<input type='hidden' name='attachList["+i+"].fileType' value='"+jobj.data("type")+"'>";
+				});
+				
+				formObj.append(str).submit();
+	    	}
+    	 formObj.submit();
 	  });
+
+
 
 });
 
@@ -141,5 +191,176 @@ function getThumbFileName(fullFilePath) {
 	arrString.splice(-1, 1, "s_" + arrString[arrString.length - 1]);
 	return arrString.join("/");
 }
+
+
+$(document).ready(function() {
+
+
+	  //파일 js
+	  
+	  var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
+	  var maxSize = 5242880; // 5MB
+
+		//파일 체크
+		function checkExtension(fileName, fileSize){
+
+			if(fileSize >= maxSize){
+				alert("파일 사이즈 초과");
+				return false;
+			}
+
+			if(regex.test(fileName)){
+				alert("해당 종류의 파일은 업로드 할 수 없습니다.");
+				return false;
+			}
+			return true;
+		
+		}
+		//파일 체크
+		
+		//showUploadResult
+		function showUploadResult(uploadResultArr){
+			
+			if(!uploadResultArr || uploadResultArr.length == 0){
+				return;
+			}
+
+			var uploadUL = $(".uploadResult ul");
+
+			var str = "";
+
+			$(uploadResultArr).each(
+				function(i, obj){
+					
+					if(obj.image){
+						var fileCallPath = encodeURIComponent(obj.uploadPath+"/s_"+obj.uuid+"_"+obj.fileName);
+
+						str += "<li data-path='"+obj.uploadPath+"'";
+						str +=" data-uuid='"+obj.uuid+"' data-filename='"+obj.fileName+"' data-type='"+obj.image+"'>"
+						str +="<div>";
+						str += "<span> " + obj.fileName + "</span>";
+						str += "<button type='button' data-file=\'"+fileCallPath+"\' data-type='image' class='btn btn-warning btn-circle'><i class='fa fa-times'></i></button><br>";
+						str += "<img src='/display?fileName="+fileCallPath+"' width='150px' height='150px'>";
+						str += "</div>";
+						str += "</li>";
+					}else{
+						var fileCallPath = encodeURIComponent(obj.uploadPath+"/"+obj.uuid+"_"+obj.fileName);
+						var fileLink = fileCallPath.replace(new RegExp(/\\/g), "/");
+
+						str += "<li data-path='"+obj.uploadPath+"'";
+						str +=" data-uuid='"+obj.uuid+"' data-filename='"+obj.fileName+"' data-type='"+obj.image+"'"
+						str +=" ><div>";
+						str += "<span> " + obj.fileName + "</span>";
+						str += "<button type='button' data-file=\'"+fileCallPath+"\' data-type='file' class='btn btn-warning btn-circle'><i class='fa fa-times'></i></button><br>";
+						str += "<img src='/resources/img/attach.jpg' width='150px' height='150px'></a>";
+						str += "</div>"; 
+						str += "</li>";
+					}
+
+				
+				});
+
+				uploadUL.append(str);
+		}
+		
+		//showUploadResult
+
+		$("input[type='file']").change(function(e){
+
+			var header = $("meta[name='_csrf_header']").attr('content');
+			var token = $("meta[name='_csrf']").attr('content');
+	
+			var formData = new FormData();
+
+			var inputFile = $("input[name='uploadFile']");
+
+			var files = inputFile[0].files;
+
+			for(var i = 0; i < files.length; i++){
+				
+				if(!checkExtension(files[i].name, files[i].size)){
+					return false;
+				}
+				formData.append("uploadFile", files[i]);
+			}
+			
+			$.ajax({
+				url : '/uploadAjaxAction',
+				processData : false,
+				contentType : false,
+				data : formData,
+				type : 'POST',
+				dataType : 'json',
+				beforeSend: function(xhr){
+      	 	        xhr.setRequestHeader(header, token);
+      	 	},
+				success : function(result){
+					console.log(result);
+					showUploadResult(result);
+				}
+
+			});
+
+
+
+		});
+
+
+
+
+	
+		(function(){
+			
+			var bno = '<c:out value="${board.bno}"/>';
+		
+			$.getJSON("/board/getAttachList", {bno : bno}, function(arr){
+				console.log(arr);
+		
+				var str = "";
+		
+				$(arr).each(function(i, attach){
+		
+					if(attach.fileType){
+						var fileCallPath = encodeURIComponent( attach.uploadPath + "/s_" + attach.uuid + "_" + attach.fileName);
+				
+			              str += "<li data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+"' data-filename = '"+attach.fileName+"' data-type='"+attach.fileType+"'><div>";
+			              str += "<span> "+attach.fileName+" </span> ";
+						  str += "<button type='button' data-file=\'"+fileCallPath+"\' data-type='image' class='btn btn-warning btn-circle'><i class='fa fa-times'></i></button><br>";
+			              str += "<img src='/display?fileName="+fileCallPath+"' width='200px' height='200px'>";
+			              str += "</div>";
+			              str += "</li>";
+				
+						}else{
+			              str += "<li data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+"' data-filename = '"+attach.fileName+"' data-type='"+attach.fileType+"'><div>";
+			              str += "<span> "+attach.fileName+" </span> ";
+						  str += "<button type='button' data-file=\'"+fileCallPath+"\' data-type='image' class='btn btn-warning btn-circle'><i class='fa fa-times'></i></button><br>";
+			              str += "<img src='/resources/img/attach.jpg' width='150px' height='150px'></a>";
+			              str += "</div>";
+			              str += "</li>";
+		
+					}
+		
+				});
+		
+						   $(".uploadResult ul").html(str);
+		
+			});
+			
+		
+		})();
+		
+			$(".uploadResult").on("click", "button", function(e){
+			
+				console.log("delete file");
+			
+				if(confirm("정말 삭제 하시겠습니까? ")){
+			
+					var targetLi = $(this).closest("li");
+					targetLi.remove();
+				}
+			
+			});
+
+});
 
 </script>

@@ -37,3 +37,24 @@
   transform: translate(0, -50px);
 }
 
+.input-file-button{
+  padding: 6px 25px;
+  background-color:#2e59d9;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+.uploadResult ul li {
+	
+	list-style-type: none;
+	float: left;
+	padding-right: 20px;
+    text-align: center;
+    font-size: 20px;
+	
+}
+.uploadResult ul li span {
+	
+	padding-right: 10px;
+}

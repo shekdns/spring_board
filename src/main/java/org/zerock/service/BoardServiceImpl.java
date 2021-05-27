@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.zerock.domain.BoardAttachVO;
 import org.zerock.domain.BoardVO;
 import org.zerock.domain.Criteria;
+import org.zerock.mapper.BoardAttachMapper;
 import org.zerock.mapper.BoardMapper;
 
 import lombok.extern.log4j.Log4j;
@@ -17,11 +20,14 @@ public class BoardServiceImpl implements BoardService{
 	@Autowired
 	private BoardMapper mapper;
 	
+	@Autowired
+	private BoardAttachMapper attachMapper;
 	
 	/*
 	 * 1. 掲示板の文章登録 
 	 *Boardオブジェクトを受け取って値をinsertさせる。 
 	 */
+	@Transactional
 	@Override
 	public void register(BoardVO board) {
 		// TODO Auto-generated method stub
@@ -29,6 +35,19 @@ public class BoardServiceImpl implements BoardService{
 		log.info("register......" + board);
 		
 		mapper.insertSelectKey(board);
+		
+		//boardのattatchListの値がない場合はreturn
+		if(board.getAttachList() == null || board.getAttachList().size() <= 0) {
+			return;
+		}
+		
+		//foreachを回りながらDBに値を入れる。
+		board.getAttachList().forEach(attach -> {
+			
+			attach.setBno(board.getBno());
+			attachMapper.insert(attach);
+		});
+		
 	
 	}
 	
@@ -47,22 +66,42 @@ public class BoardServiceImpl implements BoardService{
 	/*
 	 * 3. 掲示板の文の修正 
 	 */
+	@Transactional
 	@Override
 	public boolean modify(BoardVO board) {
 		// TODO Auto-generated method stub
 		
 		
 		log.info("modify......" + board);
+		/*
+		 * 修正方式では、既存のファイルをすべて削除した後、再uploadする方式で駆動される。
+		 * 
+		 */
+		attachMapper.deleteAll(board.getBno());
+		
+		boolean modifyResult = mapper.update(board) == 1;
+		
+		//修正されるboardVO値とファイルアップロードの値がある場合は、foreach文を通じてBnoidx値をattachListに入れる。
+		
+		if(modifyResult && board.getAttachList() != null && board.getAttachList().size() > 0) {
+			
+			board.getAttachList().forEach(attach -> {
+				attach.setBno(board.getBno());
+				attachMapper.insert(attach);
+			});
+			
+		}
 		
 		// SQLを成功させると、<update tagでupdateされた数をリターン。 従って、mapper.update(board)の値は1になる。 
 		// return trueになる
-		return mapper.update(board) == 1;
+		return modifyResult;
 		
 	}
 	
 	/*
 	 * 4. 掲示板の文を削除
 	 */
+	@Transactional
 	@Override
 	public boolean remove(int bno) {
 		// TODO Auto-generated method stub
@@ -71,6 +110,7 @@ public class BoardServiceImpl implements BoardService{
 		
 		// SQLを成功させると、<delete tagでdeleteされた数をリターン。 従って、mapper.delete(board)の値は1になる。 
 		// return trueになる
+		attachMapper.deleteAll(bno);
 		return mapper.delete(bno) == 1;
 	}
 
@@ -106,6 +146,12 @@ public class BoardServiceImpl implements BoardService{
 		log.info("get total count...... " + cri);
 		
 		return mapper.getTotalCount(cri);
+	}
+
+	@Override
+	public List<BoardAttachVO> getAttachList(int bno) {
+		// TODO Auto-generated method stub
+		return attachMapper.findByBno(bno);
 	}
 
 }

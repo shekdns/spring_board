@@ -29,8 +29,8 @@
 	</select>
 	
 	<insert id="insert">
-      insert into tbl_board (bno, title, content, writer, file_1, file_2, file_3)
-      values (seq_board.nextval, #{title}, #{content}, #{writer}, #{file_1}, #{file_2}, #{file_3})
+      insert into tbl_board (bno, title, content, writer)
+      values (seq_board.nextval, #{title}, #{content}, #{writer})
    </insert>
 	
 	<insert id="insertSelectKey">
@@ -40,9 +40,9 @@
 			select seq_board.nextval from dual
 		</selectKey>
 
-		insert into tbl_board (bno, title, content, writer, file_1, file_2, file_3)
+		insert into tbl_board (bno, title, content, writer)
 		values (#{bno},
-		#{title}, #{content}, #{writer}, #{file_1}, #{file_2}, #{file_3})
+		#{title}, #{content}, #{writer})
 	</insert>
 	
 	<select id="read" resultType="org.zerock.domain.BoardVO">
@@ -59,10 +59,7 @@
 		set title= #{title},
 		content=#{content},
 		writer = #{writer},
-		updateDate = sysdate,
-		file_1 = #{file_1},
-		file_2 = #{file_2},
-		file_3 = #{file_3}
+		updateDate = sysdate
 		where bno =
 		#{bno}
 	</update>

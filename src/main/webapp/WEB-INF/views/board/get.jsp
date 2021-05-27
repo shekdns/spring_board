@@ -35,7 +35,7 @@
 						            value='<c:out value="${board.writer }"/>' readonly="readonly">
 						        </div>  
 						        <!-- アップロードimageやファイルを出力-->
-						        <c:forEach var="i" begin="1" end="3">
+						     <%--    <c:forEach var="i" begin="1" end="3">
 									<c:set var="t" value="file_${i}" />
 										<c:if test="${not empty board[t]}">
 											<div class="form-group">
@@ -47,9 +47,33 @@
 									        document.getElementById('thumb_${i}').src="/resources/upload/" + getThumbFileName('${board[t]}');
 											</script>
 								        </c:if>
-								</c:forEach>
-						      
-							<sec:authentication property="principal" var="pinfo"/>
+								</c:forEach> --%>
+								
+						</div>
+					
+							
+						<div class="sbp-preview">
+							<div class="card-header">
+							<h3 class="card-title">파일</h3>
+						</div>
+						<div class="card-body">
+							<div class="uploadResult">
+								<ul>
+	
+	
+								</ul>
+	
+							</div>
+						</div>
+
+						</div>
+					</div>
+					
+					
+				</div>
+				
+					<div class="card-header">
+					<sec:authentication property="principal" var="pinfo"/>
 							<sec:authorize access="isAuthenticated()">
 								<c:if test="${pinfo.username eq board.writer}">
 									<button data-oper='modify' class="btn btn-primary">Modify</button>
@@ -64,16 +88,13 @@
 							  <input type='hidden' name='keyword' value='<c:out value="${cri.keyword}"/>'>
 							  <input type='hidden' name='type' value='<c:out value="${cri.type}"/>'>  
 							</form>
-								
-						</div>
-					
 					</div>
-	
-				</div>
+				
 				
 			</div>
+			
 		</div>
-		
+			
 		<!-- コメント領域-->
 		
 		<div class='container-fluid'>
@@ -432,6 +453,71 @@ $(document).ready(function() {
     operForm.submit();
     
   });  
+
+
+  (function(){
+		
+		var bno = '<c:out value="${board.bno}"/>';
+
+		$.getJSON("/board/getAttachList", {bno : bno}, function(arr){
+			console.log(arr);
+
+			var str = "";
+
+			$(arr).each(function(i, attach){
+
+				if(attach.fileType){
+					var fileCallPath = encodeURIComponent( attach.uploadPath + "/s_" + attach.uuid + "_" + attach.fileName);
+
+		              str += "<li data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+"' data-filename = '"+attach.fileName+"' data-type='"+attach.fileType+"'><div>";
+		              str += "<img src='/display?fileName="+fileCallPath+"' width='200px' height='200px'>";
+		              str += "</div>";
+		              str += "</li>";
+			
+					}else{
+		              str += "<li data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+"' data-filename = '"+attach.fileName+"' data-type='"+attach.fileType+"'><div>";
+		              str += "<span> "+attach.fileName+" </span><br/> ";
+		              str += "<img src='/resources/img/attach.jpg' width='150px' height='150px'></a>";
+		              str += "</div>";
+		              str += "</li>";
+
+				}
+
+			});
+
+					   $(".uploadResult ul").html(str);
+
+		});
+
+	})();
+
+
+	$(".uploadResult").on("click", "li", function(e){
+
+		console.log("view image");
+
+		var liObj = $(this);
+
+		var path = encodeURIComponent(liObj.data("path")+"/"+liObj.data("uuid")+"_"+liObj.data("filename"));
+
+	        if(liObj.data("type")){
+	          path.replace(new RegExp(/\\/g),"/");
+	          if (confirm("다운로드 하시겠습니까?.") == true) {
+    	          self.location = "/download?fileName=" +path;
+              } else {
+                  return;
+              }
+	        }else{
+	        	  if (confirm("다운로드 하시겠습니까?.") == true) {
+	    	          self.location = "/download?fileName=" +path;
+	              } else {
+	                  return;
+	              }
+	        }
+
+
+	});
+  
 });
 
 //サムネイルファイル名を取得する関数
@@ -441,6 +527,12 @@ function getThumbFileName(fullFilePath) {
 	arrString.splice(-1, 1, "s_" + arrString[arrString.length - 1]);
 	return arrString.join("/");
 }
+
+
+
+
+
+
 
 
 </script>

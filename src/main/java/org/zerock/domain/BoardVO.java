@@ -1,6 +1,7 @@
 package org.zerock.domain;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.Data;
 
@@ -18,9 +19,11 @@ public class BoardVO {
 	private Date updateDate;
 	private int replyCnt;
 	
-	private String file_1;
-	private String file_2;
-	private String file_3;
+	
+	private List<BoardAttachVO> attachList;
+	//private String file_1;
+	//private String file_2;
+	//private String file_3;
 	
 	/*
 	 * @param bno 掲示板の文番号
