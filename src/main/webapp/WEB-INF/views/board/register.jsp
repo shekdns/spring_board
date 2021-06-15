@@ -115,13 +115,13 @@
 
 	}
 
-
+		//ファイルチェック関数
 	  $(document).ready(function(){
 
 		  var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
 		  var maxSize = 5242880; // 5MB
 
-			//파일 체크
+			//ファイルチェック
 			function checkExtension(fileName, fileSize){
 
 				if(fileSize >= maxSize){
@@ -136,7 +136,6 @@
 				return true;
 			
 			}
-			//파일 체크
 			
 			//showUploadResult
 			function showUploadResult(uploadResultArr){

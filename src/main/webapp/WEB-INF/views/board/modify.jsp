@@ -196,12 +196,12 @@ function getThumbFileName(fullFilePath) {
 $(document).ready(function() {
 
 
-	  //파일 js
+	  //ファイルjs
 	  
 	  var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
 	  var maxSize = 5242880; // 5MB
 
-		//파일 체크
+		//ファイルチェック関数
 		function checkExtension(fileName, fileSize){
 
 			if(fileSize >= maxSize){
@@ -216,7 +216,7 @@ $(document).ready(function() {
 			return true;
 		
 		}
-		//파일 체크
+		//ファイルチェック関数
 		
 		//showUploadResult
 		function showUploadResult(uploadResultArr){

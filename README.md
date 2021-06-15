@@ -1,4 +1,4 @@
-# 게시판 - 과제 
+# 게시판 
 # 개발환경
 >Front-End
 * Bootstrap
